@@ -1,5 +1,5 @@
-import AccountLinks from "./AccountLinks";
-import Logo from "./logo";
+import AccountLinks from "../AccountLinks";
+import Logo from "../logo";
 
 const Header = ( ) => {
     return (

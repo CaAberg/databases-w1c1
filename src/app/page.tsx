@@ -1,25 +1,19 @@
-import { link } from 'fs';
-import Header from './components/header';
+import { getHomePosts } from "../../utils/supabase/queries";
+import Homeposts from "./components/Home/HomePosts";
 
-export default function Home() {
-  const post = {
-    title: "My first post",
-    author: "user tester",
-  };
+export default async function Home() {
+
+ 
+const {data, error} = await getHomePosts();
+
+  if (error) { 
+    console.error("Error fetching posts:", error);
+    return <div className="w-full flex justify-center items-center p-4">Error loading posts</div>;
+  } 
 
   return (
-    <div>
-      <Header/>
-
-      <div>
-        {post && (
-          
-          <div className="p-4 m-4 border rounded">
-            <h2 className="text-xl font-bold">{post.title}</h2>
-            <p className="text-gray-600">by {post.author}</p>
-          </div>
-        )}
-      </div>
+    <div className="w-full flex flex-col justify-center items-center p-4">
+      <Homeposts posts={data!}/>
     </div>
   );
 }

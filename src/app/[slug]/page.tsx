@@ -1,0 +1,31 @@
+import { getSinglePost } from "../../../utils/supabase/queries";
+
+const SinglePost = async ({ params }: {params: {slug: string}} ) => { 
+    const { slug } = await params;
+    const {data, error} = await getSinglePost(slug);
+    
+    if (error) { 
+        console.error("Error fetching post:", error);
+        return <div className="w-full flex justify-center items-center p-4">Error loading post</div>;
+      }
+      
+    return (
+        <>
+            {data && 
+                <>
+                <div className="w-full max-w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
+                    <h2 className="text-3xl font-bold p-4">{data.title}</h2>
+                    <p className="text-gray-600 p-4">by {data.users?.username}</p>
+                </div>
+
+                <div className="w-full max-w-2xl p-4 m-auto border-gray-700 border-1 mt-4 rounded-2xl">
+                    {data.content && <div>{data.content}</div>}
+                </div>
+                </> 
+            }
+        
+        </>
+        )
+    }
+
+    export default SinglePost;
