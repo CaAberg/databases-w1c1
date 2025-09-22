@@ -23,9 +23,9 @@ const Homeposts = ({ posts }: {posts : HomePostType }) => {
         {data && data.map
         (({id, slug, title, users}) => 
           
-          <Link href={`/${slug}`} key={id} className="w-2xl p-4 m-4 border-b border-gray-300 shadow-md">
+          <Link href={`/${slug}`} key={id} className="w-full max-w-2xl p-4 m-4 border-b border-gray-300 shadow-md">
             <h2 className="text-xl font-bold">{title}</h2>
-            <p className="text-gray-600">by {users?.username}</p>
+            <p className="text-gray-600">by {users.username}</p>
             </Link>
         )
       }
