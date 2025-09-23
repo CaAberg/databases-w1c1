@@ -2,12 +2,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { getHomePosts, HomePostType } from '@/../utils/supabase/queries';
 import Link from 'next/link';
+import { createClient } from '../../../../../utils/supabase/browser-client';
 
 const Homeposts = ({ posts }: {posts : HomePostType }) => { 
     const {data} = useQuery({
         queryKey: ['homePosts'],
         queryFn: async () => {
-            const{data, error} = await getHomePosts();
+            const supabase = await createClient();
+            const{data, error} = await getHomePosts(supabase);
             if (error) {
                 throw error;
             }
@@ -15,7 +17,8 @@ const Homeposts = ({ posts }: {posts : HomePostType }) => {
         },
         initialData: posts,
         refetchOnMount: false,
-        staleTime: 10000
+        staleTime: 10000,
+        refetchInterval: 60000,
     })
 
     return (
