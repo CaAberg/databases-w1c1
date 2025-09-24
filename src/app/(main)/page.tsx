@@ -1,6 +1,6 @@
-import { getHomePosts } from "../../utils/supabase/queries";
-import Homeposts from "./components/Home/HomePosts";
-import { createClient } from "../../utils/supabase/browser-client";
+import { getHomePosts } from "@/../utils/supabase/queries";
+import Homeposts from "@/app/components/Home/HomePosts";
+import { createClient } from "@/../utils/supabase/browser-client";
 
 export default async function Home() {
 

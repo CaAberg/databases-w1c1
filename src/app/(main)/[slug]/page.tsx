@@ -1,13 +1,8 @@
-import { getSinglePost } from "../../../utils/supabase/queries";
+import { getSinglePost } from "@/../utils/supabase/queries";
 
 const SinglePost = async ({ params }: {params: {slug: string}} ) => { 
     const { slug } = await params;
-    const {data, error} = await getSinglePost(slug);
-    
-    if (error) { 
-        console.error("Error fetching post:", error);
-        return <div className="w-full flex justify-center items-center p-4">Error loading post</div>;
-      }
+    const {data} = await getSinglePost(slug);
       
     return (
         <>
