@@ -1,7 +1,9 @@
+import { signUp } from "../../../../../actions/sign-up";
+
 const SignUpForm = () => {
   return (
     <>
-    <form className=" border-1 rounded-xl p-4 flex flex-col w-3xl mx-auto">
+    <form action = {signUp} className=" border-1 rounded-xl p-4 flex flex-col w-3xl mx-auto">
         <h2>Sign up</h2>
         <fieldset>
             <label htmlFor="email">Email</label>

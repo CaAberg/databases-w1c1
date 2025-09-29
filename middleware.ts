@@ -21,13 +21,20 @@ export const middleware = async (request: NextRequest) => {
             }
         } 
             
-         }
+        }
     )
 
-    const {data, error } = await supabase.auth.getUser();
-    console.log("MIDDLEWARE USER:", data.user);
-    console.log("MIDDLEWARE ERROR:", error);
-    return supabaseResponse;
+    const {data : {user}, error } = await supabase.auth.getUser();
+
+    const protectedRoutes = [
+        /^\/create.*$/
+    ]
+
+    if (!user && protectedRoutes.some((route) => route.test(request.nextUrl.pathname))) {
+        const newUrl = request.nextUrl.clone();
+        newUrl.pathname = 'auth/login';
+        return NextResponse.redirect(newUrl)
 
 }
 
+}
