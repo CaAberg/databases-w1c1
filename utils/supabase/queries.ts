@@ -1,4 +1,3 @@
-import { create } from "domain";
 import { createClient } from "./browser-client";
 import { QueryData } from "@supabase/supabase-js";
 
@@ -14,7 +13,7 @@ export const getSinglePost = async (slug: string) => {
   const supabase = createClient();  
   return await supabase
     .from("posts")
-    .select("id, title, slug, content, users(username)")
+    .select("id, title, slug, content, user_id, users(username)")
     .eq("slug", slug)
     .single();
 };

@@ -2,18 +2,16 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "../utils/supabase/server-client";
+import { signUpSchema } from "./schemas";
+import z from "zod";
 
-export const signUp = async (formData: FormData) => {
-    const userdata = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-    username: formData.get('username') as string
-    }
+export const signUp = async (userdata: z.infer<typeof signUpSchema>) => {
 
     const supabase = await createClient()
 
     const { data: {user}, error } = await supabase.auth.signUp(userdata)
-    console.log ("Error:", error, "user:", user)
+    
+
     if (user && user.email) {
         const {data, error} = await supabase.from('users').insert([{id: user.id, username: userdata.username, email: user.email}])
         console.log (error)
@@ -21,7 +19,3 @@ export const signUp = async (formData: FormData) => {
     if (error) throw error
     redirect ("/")
 }
-
-
-    
-    

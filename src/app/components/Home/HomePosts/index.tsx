@@ -17,8 +17,8 @@ const Homeposts = ({ posts }: {posts : HomePostType }) => {
         },
         initialData: posts,
         refetchOnMount: false,
-        staleTime: 10000,
-        refetchInterval: 60000,
+        staleTime: 10,
+        refetchInterval: 10,
     })
 
     return (
