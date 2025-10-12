@@ -21,7 +21,6 @@ export const createClient = async () => {
                 cookieStore.set(name, value, options);
                 });
           } catch {
-            error("Error setting cookies in the cookie store");
             
           }
         }
