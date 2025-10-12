@@ -22,7 +22,7 @@ const SignUpForm = () => {
 
   return (
     <>
-    <form onSubmit = {handleSubmit(values => mutate(values))} className=" border-1 rounded-xl p-4 flex flex-col w-3xl mx-auto">
+    <form onSubmit= {handleSubmit(values => mutate(values))} className=" border-1 rounded-xl p-4 flex flex-col w-3xl mx-auto">
         <h2>Sign up</h2>
         <fieldset>
             <label htmlFor="email">Email</label>

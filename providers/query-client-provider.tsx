@@ -11,12 +11,11 @@ export const getQueryClient = () => {
         return makeQueryClient(); 
     } else {
         if (!browserQueryClient) {
-            browserQueryClient = makeQueryClient();
+            browserQueryClient = makeQueryClient();        
         }
         return browserQueryClient;
-}
-
-}
+    }
+};
 
 export const QueryClientProvider = ({children}: {children: React.ReactNode}) => {
     const queryClient = getQueryClient();

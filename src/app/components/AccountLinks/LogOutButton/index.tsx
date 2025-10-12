@@ -3,9 +3,8 @@
 import { LogOut } from "../../../../../actions/log-out";
 
 const LogOutButton = () => {
-
     const handleClick = async () => {
-        await LogOut();
+    LogOut();
         
     }
     return (

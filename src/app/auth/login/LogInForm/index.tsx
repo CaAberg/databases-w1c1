@@ -1,5 +1,5 @@
 'use client'
-import {LogIn} from "@/../actions/login"
+import {LogIn} from "@/../actions/log-in"
 import {useForm} from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { logInSchema } from "../../../../../actions/schemas"
@@ -18,7 +18,7 @@ const {
 })
 
 const {mutate, isPending, error} = useMutation({
-  mutationFn: LogIn
+  mutationFn: LogIn,
 })
 
   return (
@@ -35,10 +35,9 @@ const {mutate, isPending, error} = useMutation({
             <input type="password" {...register("password")} id="password" className="border-1 rounded-md p-2 w-full"/>
             {errors.password && <ErrorMessage message={errors.password.message!}/>}
         </fieldset>
-        <button type="submit" className="bg-blue-500 text-white rounded-md p-2 mt-4 w-full">{isPending? "Logging you in!" : "Log In"} </button>
+        <button className="bg-blue-500 text-white rounded-md p-2 mt-4 w-full">{isPending? "Logging you in!" : "Log In"} </button>
+        {error && <ErrorMessage message={error.message}/>}
     </form>
-
-    {error && <ErrorMessage message={error.message}/>}
     </>
   )
 }   

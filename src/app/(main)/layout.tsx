@@ -1,11 +1,21 @@
+import React from "react";
 import Header from "../components/header";
 
-const MainLayout = ({ children }: { children: React.ReactNode }) => {
+
+const MainLayout = ({
+     children,
+     }: Readonly<{ 
+        children: React.ReactNode 
+    }>) => {
     return (
-        <div>
-           < Header/>
-            <div>{children}</div>
-        </div>
+        <>
+            
+                <Header/>
+                    <div>
+                        {children}
+                    </div>
+            
+        </>
     );
 }
 
