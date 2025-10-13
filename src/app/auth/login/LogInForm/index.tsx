@@ -5,10 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { logInSchema } from "../../../../../actions/schemas"
 import ErrorMessage from "@/app/components/ErrorMessage"
 import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 
 
 const LogInForm = () => {
+
+const router = useRouter();
 
 const {
   register,
@@ -19,6 +23,20 @@ const {
 
 const {mutate, isPending, error} = useMutation({
   mutationFn: LogIn,
+  onMutate: () => {
+    toast.loading("Logging you in...", { id: "login" });
+  },
+  onSuccess: (result) => {
+    if (result.success) {
+      toast.success("Welcome back! Logged in successfully!", { id: "login" });
+      router.push("/");
+    } else {
+      toast.error(`Login failed: ${result.error}`, { id: "login" });
+    }
+  },
+  onError: (error) => {
+    toast.error(`Login failed: ${error.message}`, { id: "login" });
+  }
 })
 
   return (

@@ -13,7 +13,7 @@ const Header = () => {
       <div className="py-8 md:mt-0 md:flex-1">
         <SearchBar />
       </div>
-
+      
       <div className="mt-4 md:mt-0 flex-shrink-0 ">
         <AccountLinks />
       </div>

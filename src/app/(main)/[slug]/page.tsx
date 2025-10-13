@@ -1,6 +1,7 @@
 import { getSinglePost } from "@/../utils/supabase/queries";
 import { createClient } from "../../../../utils/supabase/server-client";
 import DeleteButton from "./deleteButton";
+import Link from "next/link";
 
 
 export const revalidate = 600;
@@ -30,7 +31,15 @@ const SinglePost = async ({ params }: {params: {slug: string}} ) => {
                 </div>
                 {isAuthor &&
                 <div className="w-full max-w-xl p-4 border border-gray-700 mt-4 rounded-2xl text-center">
-                    <DeleteButton postId={data.id}/>
+                    <div className="flex gap-4 justify-center">
+                        <Link 
+                            href={`/${slug}/edit`}
+                            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer"
+                        >
+                            Edit post
+                        </Link>
+                        <DeleteButton postId={data.id}/>
+                    </div>
                 </div>
                 }
             </div> 

@@ -5,8 +5,12 @@ import { signUpSchema } from "../../../../../actions/schemas";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import ErrorMessage from "@/app/components/ErrorMessage";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const SignUpForm = () => {
+  const router = useRouter();
+
   const {
         register,
         handleSubmit,
@@ -15,8 +19,22 @@ const SignUpForm = () => {
       resolver: zodResolver(signUpSchema)
       })
 
-      const {mutate, error} = useMutation({
-        mutationFn: signUp
+      const {mutate, error, isPending} = useMutation({
+        mutationFn: signUp,
+        onMutate: () => {
+          toast.loading("Creating your account...", { id: "signup" });
+        },
+        onSuccess: (result) => {
+          if (result.success) {
+            toast.success("Account created successfully! Welcome!", { id: "signup" });
+            router.push("/");
+          } else {
+            toast.error(`Signup failed: ${result.error}`, { id: "signup" });
+          }
+        },
+        onError: (error) => {
+          toast.error(`Signup failed: ${error.message}`, { id: "signup" });
+        }
       })
     
 
@@ -38,7 +56,13 @@ const SignUpForm = () => {
             {errors.password && <ErrorMessage message={errors.password.message!}/>}
             
         </fieldset>
-        <button type="submit" className="bg-blue-500 text-white rounded-md p-2 mt-4 w-full">Sign up</button>
+        <button 
+          type="submit" 
+          disabled={isPending}
+          className="bg-blue-500 text-white rounded-md p-2 mt-4 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isPending ? "Creating account..." : "Sign up"}
+        </button>
         {error && <ErrorMessage message={error.message}/>}
     </form>
     </>

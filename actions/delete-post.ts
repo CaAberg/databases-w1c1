@@ -5,15 +5,21 @@ import { createClient } from "../utils/supabase/server-client"
 import { revalidatePath } from "next/cache"
 
  export const DeletePost = async (postId : number) => {
-    const supabase = await createClient()
-    await supabase 
-    .from ("posts")
-    .delete()
-    .eq('id', postId)
-    .throwOnError()
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase 
+        .from ("posts")
+        .delete()
+        .eq('id', postId)
 
-    revalidatePath("/")
+        if (error) {
+            return { success: false, error: error.message }
+        }
 
-    redirect("/")
+        revalidatePath("/")
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Failed to delete post" }
+    }
 }
 

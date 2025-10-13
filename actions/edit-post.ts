@@ -4,11 +4,11 @@ import { postSchema } from "./schemas";
 import { createClient } from "@/../utils/supabase/server-client";
 import { slugify } from "../utils/supabase/slugify";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { uploadImage } from "../utils/supabase/upload-image";
 
 export const EditPost = async ({postId, userdata}: {postId: number, userdata: z.infer<typeof postSchema>}) => {
-    const parsedData = postSchema.parse(userdata)
+    try {
+        const parsedData = postSchema.parse(userdata)
 
         const imageFile = userdata.images?.get('images');
 
@@ -16,7 +16,7 @@ export const EditPost = async ({postId, userdata}: {postId: number, userdata: z.
 
         if ((typeof imageFile !== 'string') && imageFile !== undefined) {
             if (!(imageFile instanceof File) && imageFile !== null) {
-            throw new Error("Invalid image file");
+                return { success: false, error: "Invalid image file" };
             }
             publicImageUrl = await uploadImage(imageFile!);
         }
@@ -24,25 +24,33 @@ export const EditPost = async ({postId, userdata}: {postId: number, userdata: z.
             publicImageUrl = imageFile;
         }
 
+        const supabase = await createClient();
+        const {data: {user}} = await supabase.auth.getUser();
+         
+        const {data: post, error: fetchError} = await supabase.from('posts').select('*').eq('id', postId).single();
         
-    
+        if (fetchError) {
+            return { success: false, error: "Post not found" };
+        }
+        
+        if (!user || user.id !== post?.user_id) {
+            return { success: false, error: "Not authorized to edit this post" };
+        }
 
-    const supabase = await createClient();
-    const {data: {user}} = await supabase.auth.getUser();
-     
-    const {data: post, error} = await supabase.from('posts').select('*').eq('id', postId).single();
-    if (!user || user.id !== post?.user_id) throw new Error("Post not found");
+        const {data: updatedPost, error: updateError} = 
+        await supabase.from('posts')
+            .update({...parsedData, images: publicImageUrl, slug: slugify(parsedData.title)})
+            .eq('id', postId)
+            .select('slug')
+            .single();
 
-    const {data: updatedPost} = 
-    await supabase.from('posts')
-        .update({...parsedData, images: publicImageUrl, slug: slugify(parsedData.title)})
-        .eq('id', postId)
-        .select('slug')
-        .single()
-        .throwOnError();
+        if (updateError) {
+            return { success: false, error: "Failed to update post" };
+        }
 
-    if (error) throw error;
-    revalidatePath('/');
-    redirect(`/${updatedPost.slug}`);
-
+        revalidatePath('/');
+        return { success: true, slug: updatedPost.slug };
+    } catch (error) {
+        return { success: false, error: "An unexpected error occurred" };
+    }
 }
