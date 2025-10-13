@@ -5,50 +5,48 @@ import { postSchema } from './schemas'
 import { createClient } from '../utils/supabase/server-client';
 import { slugify } from '../utils/supabase/slugify';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { uploadImage } from '../utils/supabase/upload-image';
 
 
 export const CreatePost = async (userdata: z.infer<typeof postSchema>) => {
     try {
-        console.log("image param:", userdata.images);
         const parsedData = postSchema.parse(userdata);
         const slug = slugify(parsedData.title);
 
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
+        
         if (!user) { 
-            return { success: false, error: "Not authorized! Please log in." };
+            return { success: false, error: "Not authorized" };
         }
 
         const userId = user.id;
         
         const imageFile = userdata.images?.get('images');
         
-        if (!(imageFile instanceof File) && imageFile !== null) {
+        if (imageFile && !(imageFile instanceof File)) {
             return { success: false, error: "Invalid image file" };
         }
 
-        const publicImageUrl = imageFile ? await uploadImage(imageFile) : null;
+        const publicImageUrl = (imageFile instanceof File) ? await uploadImage(imageFile) : null;
         
-        const {data, error} = await supabase.from('posts')
+        const {error} = await supabase.from('posts')
             .insert([{
                 user_id: userId,
                 slug: slug,
                 ...parsedData,
                 images: publicImageUrl,
-            }])
-            .select('slug')
-            .single();
-
+            }]);
+            
         if (error) {
-            console.log("Error inserting post:", error);
-            return { success: false, error: "Failed to create post" };
+            return { success: false, error: error.message };
         }
 
         revalidatePath("/");
-        return { success: true, slug: data.slug };
+        return { success: true, slug };
     } catch (error) {
         console.error("Create post error:", error);
-        return { success: false, error: "An unexpected error occurred" };
+        return { success: false, error: "Failed to create post" };
     }
 }

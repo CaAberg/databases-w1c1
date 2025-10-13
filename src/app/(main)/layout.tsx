@@ -8,14 +8,12 @@ const MainLayout = ({
         children: React.ReactNode 
     }>) => {
     return (
-        <>
-            
-                <Header/>
-                    <div>
-                        {children}
-                    </div>
-            
-        </>
+        <div className="min-h-screen bg-gray-100">
+        <Header/>
+        <main className="p-4">
+            {children}
+        </main>
+    </div>
     );
 }
 

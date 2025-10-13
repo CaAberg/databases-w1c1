@@ -33,10 +33,12 @@ const LogOutButton = () => {
         <button 
             onClick={handleClick}
             disabled={isLoggingOut}
-            className="disabled:opacity-50 disabled:cursor-not-allowed"
+            className="disabled:opacity-50 disabled:cursor-not-allowed
+            p-4 bg-gradient-to-br from-red-700 to-yellow-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm text-center m-4"
         >
             {isLoggingOut ? "Logging out..." : "log out"}
         </button>
+       
     )
 }
 
