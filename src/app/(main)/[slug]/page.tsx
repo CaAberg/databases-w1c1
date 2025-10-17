@@ -1,7 +1,7 @@
 import { getSinglePost } from "@/../utils/supabase/queries";
 import { createClient } from "../../../../utils/supabase/server-client";
-import DeleteButton from "./deleteButton";
-import Link from "next/link";
+import Comments from "./Comments";
+import PostMenu from "./PostMenu";
 
 
 export const revalidate = 600;
@@ -20,28 +20,24 @@ const SinglePost = async ({ params }: {params: {slug: string}} ) => {
             {data && 
             <>
             <div className="flex flex-col items-center justify-center w-full p-4">
-                <div className="w-full max-w-xl p-4 border border-gray-700 mt-4 rounded-2xl">
-                    <h2 className="text-3xl font-bold p-4">{data.title}</h2>
-                    <p className="text-gray-600 p-4">by {data.users?.username}</p>
-                    <div>{data.images && <img src={data.images} alt={data.title} />}</div>
+                <div className="w-full max-w-xl p-4 border border-gray-700 mt-4 rounded-2xl relative">
+                    {isAuthor && (
+                        <div className="absolute top-4 right-4">
+                            <PostMenu slug={slug} postId={data.id} />
+                        </div>
+                    )}
+                    <h2 className="text-3xl font-bold p-4 text-center">{data.title}</h2>
+                    <p className="text-gray-500 p-2 text-center text-sm">
+                        Posted by <span className="font-semibold text-gray-700">{data.users?.username}</span>
+                    </p>
+                    <div className="flex justify-center p-4">{data.images && <img src={data.images} alt={data.title} className="rounded-xl" />}</div>
+                    {data.content && (
+                        <div className="p-4 mt-4 text-center border-t border-gray-700">
+                            {data.content}
+                        </div>
+                    )}
                 </div>
-
-                <div className="w-full max-w-xl p-4 border border-gray-700 mt-4 rounded-2xl text-center">
-                    {data.content && <div>{data.content}</div>}
-                </div>
-                {isAuthor &&
-                <div className="w-full max-w-xl p-4 border border-gray-700 mt-4 rounded-2xl text-center">
-                    <div className="flex gap-4 justify-center">
-                        <Link 
-                            href={`/${slug}/edit`}
-                            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 hover:cursor-pointer"
-                        >
-                            Edit post
-                        </Link>
-                        <DeleteButton postId={data.id}/>
-                    </div>
-                </div>
-                }
+                <Comments postId={data.id} userId={user?.id} />
             </div> 
             </>
             }

@@ -27,6 +27,16 @@ export const searchPosts = async (query: string) => {
     .limit(10);
 };
 
+export const getCommentsByPostId = async (postId: number) => {
+  const supabase = createClient();
+  return await supabase
+    .from("comments")
+    .select("id, content, created_at, user_id, users(username)")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: true });
+};
+
 export type HomePostType = QueryData<ReturnType<typeof getHomePosts>>;
 export type SinglePostType = QueryData<ReturnType<typeof getSinglePost>>;
 export type SearchPostType = QueryData<ReturnType<typeof searchPosts>>;
+export type CommentType = QueryData<ReturnType<typeof getCommentsByPostId>>;

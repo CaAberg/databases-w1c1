@@ -50,7 +50,6 @@ const EditForm = ({postId, initialValues}: {postId: number, initialValues: Pick<
             
             let imageForm = new FormData();
             if (values.images?.length && typeof values.images !== 'string') {
-                console.log("Adding image to form:", values.images[0]);
                 imageForm.append('images', values.images[0]);
             } else {
                 console.log("No new image selected");
@@ -113,7 +112,10 @@ const EditForm = ({postId, initialValues}: {postId: number, initialValues: Pick<
             <button 
                 type="submit" 
                 disabled={isPending}
-                className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-4 text-center my-6 w-1/2 hover:cursor-pointer self-center disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl 
+                            focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 
+                            font-medium rounded-lg text-sm px-5 py-4 text-center my-6 w-1/2 hover:cursor-pointer self-center
+                            disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isPending ? "Updating..." : "Update Post"}
             </button>

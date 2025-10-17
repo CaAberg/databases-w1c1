@@ -5,7 +5,6 @@ import { postSchema } from './schemas'
 import { createClient } from '../utils/supabase/server-client';
 import { slugify } from '../utils/supabase/slugify';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { uploadImage } from '../utils/supabase/upload-image';
 
 
