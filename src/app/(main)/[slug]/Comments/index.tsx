@@ -1,5 +1,6 @@
 import { getCommentsByPostId } from "@/../utils/supabase/queries";
 import CommentForm from "../CommentForm";
+import CommentItem from "../CommentItem";
 
 type CommentsProps = {
   postId: number;
@@ -22,15 +23,7 @@ const Comments = async ({ postId, userId }: CommentsProps) => {
         )}
         
         {comments && comments.map((comment) => (
-          <div key={comment.id} className="p-4 border border-gray-700 rounded-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="font-semibold text-gray-900">{comment.users?.username}</span>
-              <span className="text-gray-500 text-sm">
-                {new Date(comment.created_at).toLocaleDateString()}
-              </span>
-            </div>
-            <p className="text-gray-900">{comment.content}</p>
-          </div>
+          <CommentItem key={comment.id} comment={comment} currentUserId={userId} />
         ))}
       </div>
     </div>

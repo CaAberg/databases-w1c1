@@ -4,7 +4,7 @@ import Comments from "./Comments";
 import PostMenu from "./PostMenu";
 
 
-export const revalidate = 600;
+export const revalidate = 60;
 
 const SinglePost = async ({ params }: {params: {slug: string}} ) => { 
     const { slug } = await params

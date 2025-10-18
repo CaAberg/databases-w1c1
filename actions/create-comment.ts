@@ -15,6 +15,7 @@ export const createComment = async (input: CreateCommentInput): Promise<CreateCo
   try {
     const parsedData = commentSchema.parse(input);
     const supabase = await createClient();
+    const now = new Date().toISOString();
     const { data, error } = await supabase
       .from("comments")
       .insert([
@@ -22,6 +23,7 @@ export const createComment = async (input: CreateCommentInput): Promise<CreateCo
           post_id: parsedData.post_id,
           user_id: parsedData.user_id,
           content: parsedData.content.trim(),
+          updated_at: now,
         } as TablesInsert<'comments'>
       ])
       .select("id")

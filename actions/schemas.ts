@@ -23,3 +23,8 @@ export const commentSchema = z.object({
     user_id: z.string(),
     content: z.string().min(1, "Comment content cannot be empty."),
 });
+
+export const editCommentSchema = z.object({
+    comment_id: z.number(),
+    content: z.string().min(1, "Comment content cannot be empty."),
+});
