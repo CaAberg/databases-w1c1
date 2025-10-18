@@ -65,7 +65,10 @@ const CreatePage = () => {
         onSubmit={handleSubmit((values) => {
           let imageForm = new FormData();
           if (values.images?.length) {
-            imageForm.append("images", values.images[0]);
+            
+            for (let i = 0; i < values.images.length; i++) {
+              imageForm.append("images", values.images[i]);
+            }
           }
           mutate({
             title: values.title,
@@ -102,8 +105,10 @@ const CreatePage = () => {
         <ImageUpload
           onImageSelect={(files) => setValue("images", files)}
           error={errors.images?.message}
-          label="Post image (Optional)"
+          label="Post images (Optional)"
           resetTrigger={resetImageUpload}
+          multiple={true}
+          maxFiles={5}
         />
         <button
           type="submit"

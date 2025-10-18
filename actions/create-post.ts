@@ -5,7 +5,7 @@ import { postSchema } from './schemas'
 import { createClient } from '../utils/supabase/server-client';
 import { slugify } from '../utils/supabase/slugify';
 import { revalidatePath } from 'next/cache';
-import { uploadImage } from '../utils/supabase/upload-image';
+import { uploadMultipleImages } from '../utils/supabase/upload-image';
 
 
 export const CreatePost = async (userdata: z.infer<typeof postSchema>) => {
@@ -22,20 +22,31 @@ export const CreatePost = async (userdata: z.infer<typeof postSchema>) => {
 
         const userId = user.id;
         
-        const imageFile = userdata.images?.get('images');
         
-        if (imageFile && !(imageFile instanceof File)) {
-            return { success: false, error: "Invalid image file" };
+        const imageFiles: File[] = [];
+        if (userdata.images) {
+            const formData = userdata.images;
+            const allImages = formData.getAll('images');
+            for (const file of allImages) {
+                if (file instanceof File) {
+                    imageFiles.push(file);
+                }
+            }
         }
 
-        const publicImageUrl = (imageFile instanceof File) ? await uploadImage(imageFile) : null;
+        
+        let imageUrls: string[] | null = null;
+        if (imageFiles.length > 0) {
+            imageUrls = await uploadMultipleImages(imageFiles);
+        }
         
         const {error} = await supabase.from('posts')
             .insert([{
                 user_id: userId,
                 slug: slug,
-                ...parsedData,
-                images: publicImageUrl,
+                title: parsedData.title,
+                content: parsedData.content,
+                images: imageUrls,
             }]);
             
         if (error) {

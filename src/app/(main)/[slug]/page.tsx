@@ -2,6 +2,7 @@ import { getSinglePost } from "@/../utils/supabase/queries";
 import { createClient } from "../../../../utils/supabase/server-client";
 import Comments from "./Comments";
 import PostMenu from "./PostMenu";
+import ImageCarousel from "@/app/components/ImageCarousel";
 
 
 export const revalidate = 60;
@@ -30,7 +31,11 @@ const SinglePost = async ({ params }: {params: {slug: string}} ) => {
                     <p className="text-gray-500 p-2 text-center text-sm">
                         Posted by <span className="font-semibold text-gray-700">{data.users?.username}</span>
                     </p>
-                    <div className="flex justify-center p-4">{data.images && <img src={data.images} alt={data.title} className="rounded-xl" />}</div>
+                    {data.images && data.images.length > 0 && (
+                        <div className="px-4">
+                            <ImageCarousel images={data.images} />
+                        </div>
+                    )}
                     {data.content && (
                         <div className="p-4 mt-4 text-center border-t border-gray-700">
                             {data.content}

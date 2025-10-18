@@ -11,11 +11,23 @@ import ErrorMessage from "@/app/components/ErrorMessage";
 import ImageUpload from "@/app/components/ImageUpload";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { X } from "lucide-react";
 
 const EditForm = ({postId, initialValues}: {postId: number, initialValues: Pick<Tables<'posts'>, 'title' | 'content' | 'images'>}) => {
 
     const postWithImageSchema = postSchema.omit( {images:true}).extend({images: z.unknown().transform(value => { return value as FileList}).optional()})
     const router = useRouter();
+    
+    const [existingImages, setExistingImages] = useState<string[]>(() => {
+        if (!initialValues.images) return [];
+        if (typeof initialValues.images === 'string') return [initialValues.images];
+        return [...initialValues.images];
+    });
+
+    const removeExistingImage = (index: number) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== index));
+    };
 
     const {register, handleSubmit, formState: { errors }, reset, setValue} = useForm({
         resolver: zodResolver(postWithImageSchema),
@@ -49,10 +61,17 @@ const EditForm = ({postId, initialValues}: {postId: number, initialValues: Pick<
             console.log("Form values:", values);
             
             let imageForm = new FormData();
+            
+            existingImages.forEach(url => {
+                imageForm.append('existingImages', url);
+            });
+            
             if (values.images?.length && typeof values.images !== 'string') {
-                imageForm.append('images', values.images[0]);
+                for (let i = 0; i < values.images.length; i++) {
+                    imageForm.append('images', values.images[i]);
+                }
             } else {
-                console.log("No new image selected");
+                console.log("No new images selected");
             }
 
             console.log("Submitting with imageForm entries:", Array.from(imageForm.entries()));
@@ -92,21 +111,59 @@ const EditForm = ({postId, initialValues}: {postId: number, initialValues: Pick<
                 {errors.content && <ErrorMessage message={errors.content.message!} />}
             </fieldset>
 
-            {initialValues.images && (
+            {existingImages.length > 0 && (
                 <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">Current image:</p>
-                    <img 
-                        src={initialValues.images} 
-                        alt="Current post image" 
-                        className="max-h-48 max-w-full rounded-lg shadow-md"
-                    />
+                    <p className="text-sm text-gray-600 mb-2">Current image(s):</p>
+                    {existingImages.length === 1 ? (
+                        
+                        <div className="relative inline-block">
+                            <img 
+                                src={existingImages[0]} 
+                                alt="Current post image" 
+                                className="max-h-48 max-w-full rounded-lg shadow-md"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => removeExistingImage(0)}
+                                className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white 
+                                           rounded-full p-1 shadow-lg transition-colors hover:cursor-pointer"
+                                aria-label="Remove image"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    ) : (
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            {existingImages.map((image, index) => (
+                                <div key={index} className="relative">
+                                    <img 
+                                        src={image} 
+                                        alt={`Post image ${index + 1}`} 
+                                        className="h-48 w-full object-cover rounded-lg shadow-md"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeExistingImage(index)}
+                                        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white 
+                                                   rounded-full p-1 shadow-lg transition-colors hover:cursor-pointer"
+                                        aria-label={`Remove image ${index + 1}`}
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
             
             <ImageUpload
                 onImageSelect={(files) => setValue("images", files)}
                 error={errors.images?.message}
-                label="Update post image (Optional)"
+                label="Update post image(s) (Optional)"
+                multiple={true}
+                maxFiles={5}
             />
             
             <button 

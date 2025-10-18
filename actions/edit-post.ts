@@ -4,7 +4,7 @@ import { postSchema } from "./schemas";
 import { createClient } from "@/../utils/supabase/server-client";
 import { slugify } from "../utils/supabase/slugify";
 import { revalidatePath } from "next/cache";
-import { uploadImage } from "../utils/supabase/upload-image";
+import { uploadMultipleImages } from "../utils/supabase/upload-image";
 
 export const EditPost = async ({postId, userdata}: {postId: number, userdata: z.infer<typeof postSchema>}) => {
     try {
@@ -38,29 +38,44 @@ export const EditPost = async ({postId, userdata}: {postId: number, userdata: z.
             return { success: false, error: "Not authorized to edit this post" };
         }
 
-        // Handle image upload
-        let publicImageUrl = post.images; // Keep existing image by default
+        
+        let keptImages: string[] = [];
+        
         
         if (userdata.images) {
-            const imageFile = userdata.images.get('images');
-            console.log("Image file:", imageFile);
+            const existingImageUrls = userdata.images.getAll('existingImages');
+            keptImages = existingImageUrls.filter(url => typeof url === 'string') as string[];
+        }
+
+        let newImageUrls: string[] = [];
+        
+        if (userdata.images) {
+            const allImages = userdata.images.getAll('images');
+            const imageFiles: File[] = [];
             
-            if (imageFile && imageFile instanceof File) {
+            for (const file of allImages) {
+                if (file instanceof File && file.size > 0) {
+                    imageFiles.push(file);
+                }
+            }
+            
+            if (imageFiles.length > 0) {
                 try {
-                    publicImageUrl = await uploadImage(imageFile);
-                    console.log("New image uploaded:", publicImageUrl);
+                    newImageUrls = await uploadMultipleImages(imageFiles);
+                    console.log("New images uploaded:", newImageUrls);
                 } catch (uploadError) {
-                    console.log("Error uploading image:", uploadError);
-                    return { success: false, error: "Failed to upload image" };
+                    console.log("Error uploading images:", uploadError);
+                    return { success: false, error: "Failed to upload images" };
                 }
             }
         }
+        
+        const finalImages = [...keptImages, ...newImageUrls];
 
-        // Update the post
         const updateData = {
             title: parsedData.title,
             content: parsedData.content,
-            images: publicImageUrl,
+            images: finalImages,
             slug: slugify(parsedData.title)
         };
         
@@ -87,7 +102,6 @@ export const EditPost = async ({postId, userdata}: {postId: number, userdata: z.
     } catch (error) {
         console.error("EditPost error:", error);
         
-        // Provide more specific error messages
         if (error instanceof z.ZodError) {
             return { success: false, error: "Invalid form data: " + error.issues[0].message };
         }

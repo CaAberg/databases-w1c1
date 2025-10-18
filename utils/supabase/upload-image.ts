@@ -17,3 +17,24 @@ export const uploadImage = async (images: File) => {
                             .getPublicUrl(data.path)
     return publicUrl
 }
+
+export const uploadMultipleImages = async (imageFiles: File[]): Promise<string[]> => {
+    const supabase = await createClient();
+    const uploadedUrls: string[] = [];
+
+    for (const file of imageFiles) {
+        const imageName: string[] = file.name.split('.');
+        const path: string = `${imageName[0]}-${uuid()}.${imageName[1]}`;
+
+        const { data, error } = await supabase.storage.from('images').upload(path, file);
+        if (error) throw error;
+
+        const { data: { publicUrl } } = await supabase.storage
+            .from('images')
+            .getPublicUrl(data.path);
+        
+        uploadedUrls.push(publicUrl);
+    }
+
+    return uploadedUrls;
+}
