@@ -27,7 +27,7 @@ const SinglePost = async ({ params }: {params: {slug: string}} ) => {
                             <PostMenu slug={slug} postId={data.id} />
                         </div>
                     )}
-                    <h2 className="text-3xl font-bold p-4 text-center">{data.title}</h2>
+                    <h2 className="text-3xl font-bold py-4 px-6 text-center">{data.title}</h2>
                     <p className="text-gray-500 p-2 text-center text-sm">
                         Posted by <span className="font-semibold text-gray-700">{data.users?.username}</span>
                     </p>

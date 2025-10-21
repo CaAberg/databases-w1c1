@@ -35,6 +35,19 @@ export const middleware = async (request: NextRequest) => {
 
     ];
 
+    const authRoutes = [
+        /^\/auth\/login.*$/,
+        /^\/auth\/signup.*$/
+    ];
+
+    // Redirect logged-in users away from auth pages to home
+    if (user && authRoutes.some(route => route.test(request.nextUrl.pathname))) {
+        const newUrl = request.nextUrl.clone();
+        newUrl.pathname = '/';
+        return NextResponse.redirect(newUrl);
+    }
+
+    // Redirect non-logged-in users to login for protected routes
     if (!user && protectedRoutes.some(route => route.test(request.nextUrl.pathname))) {
         const newUrl = request.nextUrl.clone();
         newUrl.pathname = '/auth/login';

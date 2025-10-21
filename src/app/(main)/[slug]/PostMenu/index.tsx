@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { MoreVertical, Edit } from "lucide-react";
 import DeleteButton from "../deleteButton";
 
 type PostMenuProps = {
@@ -36,13 +37,7 @@ const PostMenu = ({ slug, postId }: PostMenuProps) => {
         className="p-2 hover:bg-gray-700 rounded-full transition-colors"
         aria-label="Post options"
       >
-        <svg
-          className="w-6 h-6 text-gray-400 hover:text-gray-200"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-        >
-          <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-        </svg>
+        <MoreVertical className="w-6 h-6 text-gray-400 hover:text-gray-200" />
       </button>
 
       {isOpen && (
@@ -53,19 +48,7 @@ const PostMenu = ({ slug, postId }: PostMenuProps) => {
               className="flex items-center gap-2 px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
               onClick={() => setIsOpen(false)}
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
+              <Edit className="w-4 h-4" />
               Edit post
             </Link>
             <div className="border-t border-gray-700 my-1"></div>
